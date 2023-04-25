@@ -6,6 +6,8 @@ import {
   Stack,
   Text,
   DetailsListLayoutMode,
+  ChoiceGroup,
+  IChoiceGroupOption,
 } from "@fluentui/react";
 import useFetch from "../hooks/useFetch";
 import { useState, useEffect } from "react";
@@ -13,10 +15,6 @@ import { ISession, IUser } from "../interfaces/interface";
 import Table from "./Table";
 
 export default function Users() {
-  const { isLoading, isError, errorMessage, data } = useFetch(
-    `${process.env.API_ENDPOINT}/watchstamps`
-  );
-
   const millisToMinutesAndSeconds = (millis: number) => {
     var minutes = Math.floor(millis / 60000);
     var seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -122,10 +120,21 @@ export default function Users() {
     },
   ];
 
+  const options: IChoiceGroupOption[] = [
+    { key: "prod", text: "Production" },
+    { key: "uat", text: "UAT" },
+  ];
+
   const [users, setUsers] = useState<IUser[]>([]);
   const [userCount, setUserCount] = useState<number>(0);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [sessionItems, setSessionItems] = useState<ISession[]>([]);
+  const [environmentOption, setEnvironmentOption] = useState<string>("prod");
+
+  const { isLoading, isError, errorMessage, data } = useFetch(
+    `${process.env.API_ENDPOINT}/watchstamps`,
+    environmentOption
+  );
 
   useEffect(() => {
     setSessionItems(
@@ -147,6 +156,26 @@ export default function Users() {
       verticalAlign="start"
       tokens={{ childrenGap: 30 }}
     >
+      <Stack>
+        <ChoiceGroup
+          defaultSelectedKey={environmentOption}
+          options={options}
+          onChange={(ev, option) =>
+            setEnvironmentOption(option?.key || environmentOption)
+          }
+          required={true}
+          styles={{
+            flexContainer: {
+              display: "flex",
+              backgroundColor: "#ffffff",
+              padding: "0 10px 5px",
+              borderRadius: "5px",
+              justifyContent: "space-between",
+              width: "180px",
+            },
+          }}
+        />
+      </Stack>
       <Stack>
         <Stack>
           <Text

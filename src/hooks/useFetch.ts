@@ -1,19 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface IError {
   isError: boolean;
   errorMessage: string;
 }
 
-export default function useFetch(
-  url: string,
-  options: RequestInit = {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }
-) {
+export default function useFetch(url: string, environmentOption: string) {
   /**
    * A custom hook for fetching data from an API.
    *
@@ -27,14 +19,20 @@ export default function useFetch(
     isError: false,
     errorMessage: "",
   });
-  const apiFired = useRef(false);
 
   useEffect(() => {
-    if (url && !apiFired.current) {
-      apiFired.current = true;
+    const options: RequestInit = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Environment: environmentOption,
+      },
+    };
+
+    if (url) {
       fetchData(url, options);
     }
-  }, [url]);
+  }, [url, environmentOption]);
 
   const fetchData = async (url: string, options?: RequestInit) => {
     setIsLoading(true);

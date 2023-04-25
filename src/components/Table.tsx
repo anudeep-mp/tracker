@@ -10,7 +10,7 @@ export default function Table(props: any) {
       style={{
         height: "40vh",
         maxWidth: "90vw",
-        minWidth: "50vw",
+        minWidth: "70vw",
         overflow: "auto",
       }}
     >
