@@ -146,7 +146,7 @@ export default function Users() {
     if (!isLoading && !isError && data && data.isSuccess) {
       setUsers(data.result.users);
       setUserCount(data.result.userCount);
-      setSelectedUserId(data.result.users[0].userId);
+      setSelectedUserId(data.result?.users[0]?.userId);
     }
   }, [isLoading, isError, data]);
 
