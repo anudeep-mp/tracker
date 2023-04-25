@@ -8,8 +8,9 @@ export default function Table(props: any) {
   return (
     <div
       style={{
-        height: "35vh",
+        height: "40vh",
         maxWidth: "90vw",
+        minWidth: "50vw",
         overflow: "auto",
       }}
     >

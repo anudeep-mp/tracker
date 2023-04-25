@@ -59,7 +59,7 @@ export default function Users() {
     },
     {
       key: "sessionCount",
-      name: "Session xount",
+      name: "Session count",
       fieldName: "sessionCount",
       minWidth: 200,
       maxWidth: 300,
