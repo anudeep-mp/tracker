@@ -1,7 +1,6 @@
 import {
   IColumn,
   SelectionMode,
-  ShimmeredDetailsList,
   MessageBar,
   MessageBarType,
   Stack,
