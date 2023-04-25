@@ -144,11 +144,17 @@ export default function Users() {
 
   useEffect(() => {
     if (!isLoading && !isError && data && data.isSuccess) {
-      setUsers(data.result.users);
+      setUsers(sortByDate(data.result.users, "createdAt"));
       setUserCount(data.result.userCount);
       setSelectedUserId(data.result?.users[0]?.userId);
     }
   }, [isLoading, isError, data]);
+
+  const sortByDate = (arr: any, key: string) => {
+    return arr.sort((a: any, b: any) => {
+      return new Date(b[key]).getTime() - new Date(a[key]).getTime();
+    });
+  };
 
   return (
     <Stack
