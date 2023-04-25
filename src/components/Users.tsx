@@ -160,7 +160,7 @@ export default function Users() {
         <ChoiceGroup
           defaultSelectedKey={environmentOption}
           options={options}
-          onChange={(ev, option) =>
+          onChange={(_, option) =>
             setEnvironmentOption(option?.key || environmentOption)
           }
           required={true}
