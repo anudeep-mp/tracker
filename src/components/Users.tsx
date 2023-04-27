@@ -76,6 +76,22 @@ export default function Users() {
       },
     },
     {
+      key: "lastSessoionCreatedAt",
+      name: "Last session",
+      fieldName: "lastSessoionCreatedAt",
+      minWidth: 200,
+      maxWidth: 300,
+      onRender: (item: IUser) => {
+        return (
+          <span>
+            {new Date(
+              item.sessions[item.sessions.length - 1].timeStamps[0]
+            ).toLocaleString()}
+          </span>
+        );
+      },
+    },
+    {
       key: "lastWatchTime",
       name: "Latest watch time",
       fieldName: "lastWatchTime",
@@ -90,32 +106,43 @@ export default function Users() {
       key: "userId",
       name: "User ID",
       fieldName: "userId",
-      minWidth: 200,
-      maxWidth: 300,
+      minWidth: 150,
+      maxWidth: 250,
     },
     {
       key: "sessionId",
       name: "Session ID",
       fieldName: "sessionId",
-      minWidth: 200,
-      maxWidth: 300,
+      minWidth: 150,
+      maxWidth: 250,
     },
     {
       key: "timeStampsCount",
       name: "Timestamps count",
       fieldName: "timeStampsCount",
-      minWidth: 200,
-      maxWidth: 300,
-      onRender: (item: ISession) => {
-        return <span>{item.timeStamps.length}</span>;
-      },
+      minWidth: 150,
+      maxWidth: 150,
+    },
+    {
+      key: "sessionStart",
+      name: "Session start",
+      fieldName: "sessionStart",
+      minWidth: 150,
+      maxWidth: 200,
+    },
+    {
+      key: "sessionEnd",
+      name: "Session end",
+      fieldName: "sessionEnd",
+      minWidth: 150,
+      maxWidth: 250,
     },
     {
       key: "watchTime",
       name: "Watch time",
       fieldName: "watchTime",
-      minWidth: 200,
-      maxWidth: 300,
+      minWidth: 150,
+      maxWidth: 200,
       onRender: renderWatchTime,
     },
   ];
@@ -137,9 +164,26 @@ export default function Users() {
   );
 
   useEffect(() => {
-    setSessionItems(
-      users.find((u) => u.userId === selectedUserId)?.sessions || []
-    );
+    let tempSessionItems: ISession[] =
+      users.find((u) => u.userId === selectedUserId)?.sessions || [];
+    tempSessionItems = tempSessionItems?.map((s: ISession) => {
+      return {
+        ...s,
+        sessionStart: new Date(s.timeStamps[0]),
+      };
+    });
+    tempSessionItems = sortByDate(tempSessionItems, "sessionStart");
+    tempSessionItems = tempSessionItems?.map((s: ISession) => {
+      return {
+        ...s,
+        timeStampsCount: s.timeStamps.length,
+        sessionStart: s["sessionStart"]?.toLocaleString(),
+        sessionEnd: new Date(
+          s.timeStamps[s.timeStamps.length - 1]
+        ).toLocaleString(),
+      };
+    });
+    setSessionItems(tempSessionItems);
   }, [selectedUserId]);
 
   useEffect(() => {

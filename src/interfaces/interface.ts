@@ -3,6 +3,9 @@ export interface ISession {
   userId: string;
   sessionId: string;
   timeStamps: string[];
+  sessionStart?: Date | string;
+  sessionEnd?: string;
+  timeStampsCount?: number;
 }
 
 export interface IUser {
