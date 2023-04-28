@@ -35,6 +35,10 @@ export default function useFetch(
     };
     fetchData(url, options);
     const intervalId = setInterval(() => {
+      setError({
+        isError: false,
+        errorMessage: "",
+      })
       fetchData(url, options);
     }, interval);
 

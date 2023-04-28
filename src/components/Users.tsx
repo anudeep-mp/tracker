@@ -8,11 +8,17 @@ import {
   DetailsListLayoutMode,
   ChoiceGroup,
   IChoiceGroupOption,
+  Modal,
+  DefaultButton,
+  PrimaryButton,
+  TextField,
 } from "@fluentui/react";
 import useFetch from "../hooks/useFetch";
 import { useState, useEffect } from "react";
 import { ISession, IUser } from "../interfaces/interface";
 import Table from "./Table";
+
+import DeleteIcon from "../assets/delete.png";
 
 export default function Users() {
   const renderTimeSpent = (time: number) => {
@@ -34,6 +40,50 @@ export default function Users() {
 
   const renderDate = (date: string) => {
     return <span>{new Date(date).toLocaleString()}</span>;
+  };
+
+  const deleteUser = () => {
+    if (!deletePromtUser?.userId) return;
+    hideModal();
+    setUserDeletionPassword("");
+    const requestOptions: RequestInit = {
+      method: "DELETE",
+      headers: {
+        "Method": "DELETE",
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Accept": "*/*",
+        Environment: environmentOption,
+      },
+    };
+    fetch(
+      `${process.env.API_ENDPOINT}/watchstamp/${deletePromtUser?.userId}`,
+      requestOptions
+    ).then((response) => {
+      if (response.ok) {
+        const newUsers = users.filter((u) => u.userId !== deletePromtUser?.userId);
+        setUsers(newUsers);
+        setSelectedUserId(newUsers[0].userId);
+      }
+    });
+  };
+
+  const renderDeleteUserIcon = (item: IUser) => {
+    return (
+      <img
+        src={DeleteIcon}
+        style={{
+          width: "20px",
+          height: "20px",
+          cursor: "pointer",
+          zIndex: 100,
+        }}
+        onClick={() => {
+          showModal();
+          setDeletePromptUser(item);
+        }}
+      />
+    );
   };
 
   const columns: IColumn[] = [
@@ -74,6 +124,14 @@ export default function Users() {
       minWidth: 200,
       maxWidth: 300,
       onRender: (item: IUser) => renderTimeSpent(item.totalTimeSpent),
+    },
+    {
+      key: "deleteUser",
+      name: "Delete user",
+      fieldName: "deleteUser",
+      minWidth: 150,
+      maxWidth: 150,
+      onRender: renderDeleteUserIcon,
     },
   ];
 
@@ -135,6 +193,9 @@ export default function Users() {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [sessionItems, setSessionItems] = useState<ISession[]>([]);
   const [environmentOption, setEnvironmentOption] = useState<string>("prod");
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [deletePromtUser, setDeletePromptUser] = useState<IUser>();
+  const [userDeletionPassword, setUserDeletionPassword] = useState<string>("");
 
   const { isLoading, isError, errorMessage, data } = useFetch(
     `${process.env.API_ENDPOINT}/watchstamps`,
@@ -161,6 +222,9 @@ export default function Users() {
       return new Date(b[key]).getTime() - new Date(a[key]).getTime();
     });
   };
+
+  const showModal = () => setIsModalOpen(true);
+  const hideModal = () => setIsModalOpen(false);
 
   return (
     <Stack
@@ -244,6 +308,43 @@ export default function Users() {
           layoutMode={DetailsListLayoutMode.justified}
         />
       </Stack>
+      <Modal
+        isOpen={isModalOpen}
+        onDismiss={hideModal}
+        isBlocking={false}
+        styles={{
+          scrollableContent: {
+            height: "100%",
+          },
+          main: {
+            height: "250px",
+            width: "350px",
+          },
+        }}
+      >
+        <Stack verticalFill tokens={{ childrenGap: 20 }} verticalAlign="center">
+          <Stack horizontalAlign="center" tokens={{ childrenGap: 10 }}>
+            <Text variant="mediumPlus">Are you sure you want to delete this user?</Text>
+            <Text variant="small">User ID : {deletePromtUser?.userId}</Text>
+            <Text >User has spent {renderTimeSpent(deletePromtUser?.totalTimeSpent || 0)} in your platform</Text>
+            <TextField
+              type="password"
+              label="Password"
+              required
+              value={userDeletionPassword}
+              onChange={(_, value) => setUserDeletionPassword(value || "")}
+            />
+          </Stack>
+          <Stack horizontal horizontalAlign="space-around" verticalAlign="end">
+            <DefaultButton onClick={hideModal} text="Cancel" />
+            <PrimaryButton
+              onClick={deleteUser}
+              text="OK"
+              disabled={userDeletionPassword !== "cbgrows"}
+            />
+          </Stack>
+        </Stack>
+      </Modal>
     </Stack>
   );
 }
