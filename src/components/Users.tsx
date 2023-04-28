@@ -43,7 +43,7 @@ export default function Users() {
   };
 
   const deleteUser = () => {
-    if (!deletePromtUser?.userId) return;
+    if (!deletePromtUser?.id) return;
     hideModal();
     setUserDeletionPassword("");
     const requestOptions: RequestInit = {
@@ -57,11 +57,11 @@ export default function Users() {
       },
     };
     fetch(
-      `${process.env.API_ENDPOINT}/watchstamp/${deletePromtUser?.userId}`,
+      `${process.env.API_ENDPOINT}/watchstamp/${deletePromtUser?.id}`,
       requestOptions
     ).then((response) => {
       if (response.ok) {
-        const newUsers = users.filter((u) => u.userId !== deletePromtUser?.userId);
+        const newUsers = users.filter((u) => u.id !== deletePromtUser?.id);
         setUsers(newUsers);
         setSelectedUserId(newUsers[0].userId);
       }
