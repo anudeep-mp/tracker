@@ -15,36 +15,25 @@ import { ISession, IUser } from "../interfaces/interface";
 import Table from "./Table";
 
 export default function Users() {
-  const millisToMinutesAndSeconds = (millis: number) => {
-    var minutes = Math.floor(millis / 60000);
-    var seconds = ((millis % 60000) / 1000).toFixed(0);
-    return minutes + ":" + (Number(seconds) < 10 ? "0" : "") + seconds;
+  const renderTimeSpent = (time: number) => {
+    const hours = time / 3600;
+    const rhours = Math.floor(hours);
+    const minutes = (hours - rhours) * 60;
+    const rminutes = Math.floor(minutes);
+    const seconds = (minutes - rminutes) * 60;
+    const rseconds = Math.round(seconds);
+
+    return (
+      <span>
+        {rhours > 0 && <span>{rhours}hr </span>}
+        {rminutes > 0 && <span>{rminutes}min </span>}
+        <span>{rseconds}s</span>
+      </span>
+    );
   };
 
-  const renderLastWatchTime = (item: IUser) => {
-    const lastSession = item.sessions[item.sessions.length - 1];
-
-    const lastSessionFirstStamp = new Date(lastSession.timeStamps[0]).getTime();
-    const lastSessionLastStamp = new Date(
-      lastSession.timeStamps[lastSession.timeStamps.length - 1]
-    ).getTime();
-
-    const lastWatchTime = millisToMinutesAndSeconds(
-      lastSessionLastStamp - lastSessionFirstStamp
-    );
-    return <span>{lastWatchTime}</span>;
-  };
-
-  const renderWatchTime = (session: ISession) => {
-    const lastSessionFirstStamp = new Date(session.timeStamps[0]).getTime();
-    const lastSessionLastStamp = new Date(
-      session.timeStamps[session.timeStamps.length - 1]
-    ).getTime();
-
-    const lastWatchTime = millisToMinutesAndSeconds(
-      lastSessionLastStamp - lastSessionFirstStamp
-    );
-    return <span>{lastWatchTime}</span>;
+  const renderDate = (date: string) => {
+    return <span>{new Date(date).toLocaleString()}</span>;
   };
 
   const columns: IColumn[] = [
@@ -61,43 +50,30 @@ export default function Users() {
       fieldName: "sessionCount",
       minWidth: 200,
       maxWidth: 300,
-      onRender: (item: IUser) => {
-        return <span>{item.sessions.length}</span>;
-      },
     },
     {
       key: "createdAt",
-      name: "Created at",
+      name: "First seen",
       fieldName: "createdAt",
       minWidth: 200,
       maxWidth: 300,
-      onRender: (item: IUser) => {
-        return <span>{new Date(item.createdAt).toLocaleString()}</span>;
-      },
+      onRender: (item: IUser) => renderDate(item.createdAt),
     },
     {
-      key: "lastSessoionCreatedAt",
-      name: "Last session",
-      fieldName: "lastSessoionCreatedAt",
+      key: "lastSeenAt",
+      name: "Last seen",
+      fieldName: "lastSeenAt",
       minWidth: 200,
       maxWidth: 300,
-      onRender: (item: IUser) => {
-        return (
-          <span>
-            {new Date(
-              item.sessions[item.sessions.length - 1].timeStamps[0]
-            ).toLocaleString()}
-          </span>
-        );
-      },
+      onRender: (item: IUser) => renderDate(item.lastSeenAt),
     },
     {
-      key: "lastWatchTime",
-      name: "Latest watch time",
-      fieldName: "lastWatchTime",
+      key: "totalTimeSpent",
+      name: "Totel time spent",
+      fieldName: "totalTimeSpent",
       minWidth: 200,
       maxWidth: 300,
-      onRender: renderLastWatchTime,
+      onRender: (item: IUser) => renderTimeSpent(item.totalTimeSpent),
     },
   ];
 
@@ -129,6 +105,7 @@ export default function Users() {
       fieldName: "sessionStart",
       minWidth: 150,
       maxWidth: 200,
+      onRender: (item: ISession) => renderDate(item.sessionStartedAt),
     },
     {
       key: "sessionEnd",
@@ -136,14 +113,15 @@ export default function Users() {
       fieldName: "sessionEnd",
       minWidth: 150,
       maxWidth: 250,
+      onRender: (item: ISession) => renderDate(item.sessionEndedAt),
     },
     {
-      key: "watchTime",
-      name: "Watch time",
-      fieldName: "watchTime",
+      key: "sessionDuration",
+      name: "Session duration",
+      fieldName: "sessionDuration",
       minWidth: 150,
       maxWidth: 200,
-      onRender: renderWatchTime,
+      onRender: (item: ISession) => renderTimeSpent(item.sessionDuration),
     },
   ];
 
@@ -154,7 +132,7 @@ export default function Users() {
 
   const [users, setUsers] = useState<IUser[]>([]);
   const [userCount, setUserCount] = useState<number>(0);
-  const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [sessionItems, setSessionItems] = useState<ISession[]>([]);
   const [environmentOption, setEnvironmentOption] = useState<string>("prod");
 
@@ -167,31 +145,14 @@ export default function Users() {
   useEffect(() => {
     let tempSessionItems: ISession[] =
       users.find((u) => u.userId === selectedUserId)?.sessions || [];
-    tempSessionItems = tempSessionItems?.map((s: ISession) => {
-      return {
-        ...s,
-        sessionStart: new Date(s.timeStamps[0]),
-      };
-    });
-    tempSessionItems = sortByDate(tempSessionItems, "sessionStart");
-    tempSessionItems = tempSessionItems?.map((s: ISession) => {
-      return {
-        ...s,
-        timeStampsCount: s.timeStamps.length,
-        sessionStart: s["sessionStart"]?.toLocaleString(),
-        sessionEnd: new Date(
-          s.timeStamps[s.timeStamps.length - 1]
-        ).toLocaleString(),
-      };
-    });
-    setSessionItems(tempSessionItems);
-  }, [selectedUserId]);
+    setSessionItems(sortByDate(tempSessionItems, "sessionStartedAt"));
+  }, [selectedUserId, users]);
 
   useEffect(() => {
     if (!isLoading && !isError && data && data.isSuccess) {
-      setUsers(sortByDate(data.result.users, "createdAt"));
+      setUsers(sortByDate(data.result.users, "lastSeenAt"));
       setUserCount(data.result.userCount);
-      setSelectedUserId(data.result?.users[0]?.userId);
+      !selectedUserId && setSelectedUserId(data.result?.users[0]?.userId);
     }
   }, [isLoading, isError, data]);
 

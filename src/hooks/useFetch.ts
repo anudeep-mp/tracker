@@ -26,14 +26,15 @@ export default function useFetch(
 
   useEffect(() => {
     setIsLoading(true);
+    const options: RequestInit = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Environment: environmentOption,
+      },
+    };
+    fetchData(url, options);
     const intervalId = setInterval(() => {
-      const options: RequestInit = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Environment: environmentOption,
-        },
-      };
       fetchData(url, options);
     }, interval);
 

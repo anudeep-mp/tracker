@@ -3,14 +3,18 @@ export interface ISession {
   userId: string;
   sessionId: string;
   timeStamps: string[];
-  sessionStart?: Date | string;
-  sessionEnd?: string;
-  timeStampsCount?: number;
+  timeStampsCount: number;
+  sessionStartedAt: string;
+  sessionEndedAt: string;
+  sessionDuration: number;
 }
 
 export interface IUser {
   id: string;
   userId: string;
   sessions: ISession[];
+  sessionsCount: number;
   createdAt: string;
+  lastSeenAt: string;
+  totalTimeSpent: number;
 }
