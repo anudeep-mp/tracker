@@ -160,7 +160,8 @@ export default function Users() {
 
   const { isLoading, isError, errorMessage, data } = useFetch(
     `${process.env.API_ENDPOINT}/watchstamps`,
-    environmentOption
+    environmentOption,
+    10000
   );
 
   useEffect(() => {

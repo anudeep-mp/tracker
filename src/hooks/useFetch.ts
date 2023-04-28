@@ -5,7 +5,11 @@ interface IError {
   errorMessage: string;
 }
 
-export default function useFetch(url: string, environmentOption: string) {
+export default function useFetch(
+  url: string,
+  environmentOption: string,
+  interval: number
+) {
   /**
    * A custom hook for fetching data from an API.
    *
@@ -21,21 +25,22 @@ export default function useFetch(url: string, environmentOption: string) {
   });
 
   useEffect(() => {
-    const options: RequestInit = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Environment: environmentOption,
-      },
-    };
-
-    if (url) {
+    setIsLoading(true);
+    const intervalId = setInterval(() => {
+      const options: RequestInit = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Environment: environmentOption,
+        },
+      };
       fetchData(url, options);
-    }
+    }, interval);
+
+    return () => clearInterval(intervalId);
   }, [url, environmentOption]);
 
   const fetchData = async (url: string, options?: RequestInit) => {
-    setIsLoading(true);
     try {
       fetch(url, options)
         .then((response) => {
