@@ -8,6 +8,7 @@ interface IError {
 export default function useFetch(
   url: string,
   environmentOption: string,
+  poll: boolean,
   interval: number
 ) {
   /**
@@ -34,16 +35,18 @@ export default function useFetch(
       },
     };
     fetchData(url, options);
-    const intervalId = setInterval(() => {
-      setError({
-        isError: false,
-        errorMessage: "",
-      })
-      fetchData(url, options);
-    }, interval);
-
-    return () => clearInterval(intervalId);
-  }, [url, environmentOption]);
+    if(poll){
+      const intervalId = setInterval(() => {
+        setError({
+          isError: false,
+          errorMessage: "",
+        })
+        fetchData(url, options);
+      }, interval);
+      
+      return () => clearInterval(intervalId);
+    }
+  }, [url, environmentOption, poll]);
 
   const fetchData = async (url: string, options?: RequestInit) => {
     try {
