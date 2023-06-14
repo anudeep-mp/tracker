@@ -49,10 +49,10 @@ export default function Users() {
     const requestOptions: RequestInit = {
       method: "DELETE",
       headers: {
-        "Method": "DELETE",
+        Method: "DELETE",
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Accept": "*/*",
+        Accept: "*/*",
         Environment: environmentOption,
       },
     };
@@ -212,11 +212,30 @@ export default function Users() {
 
   useEffect(() => {
     if (!isLoading && !isError && data && data.isSuccess) {
-      setUsers(sortByDate(data.result.users, "lastSeenAt"));
-      setUserCount(data.result.userCount);
+      const modifiedUsers = sortByDate(
+        filterArrayByUniqueProperty(data.result.users),
+        "lastSeenAt"
+      );
+      setUsers(modifiedUsers);
+      setUserCount(modifiedUsers.length);
+      console.log(modifiedUsers);
       !selectedUserId && setSelectedUserId(data.result?.users[0]?.userId);
     }
   }, [isLoading, isError, data]);
+
+  function filterArrayByUniqueProperty(arr: IUser[]) {
+    const uniqueValues: any = {};
+
+    arr.forEach((obj) => {
+      const value = obj.userId;
+
+      if (!(value in uniqueValues)) {
+        uniqueValues[value] = obj;
+      }
+    });
+
+    return Object.values(uniqueValues);
+  }
 
   const sortByDate = (arr: any, key: string) => {
     return arr.sort((a: any, b: any) => {
@@ -325,9 +344,15 @@ export default function Users() {
       >
         <Stack verticalFill tokens={{ childrenGap: 20 }} verticalAlign="center">
           <Stack horizontalAlign="center" tokens={{ childrenGap: 10 }}>
-            <Text variant="mediumPlus">Are you sure you want to delete this user?</Text>
+            <Text variant="mediumPlus">
+              Are you sure you want to delete this user?
+            </Text>
             <Text variant="small">User ID : {deletePromtUser?.userId}</Text>
-            <Text >User has spent {renderTimeSpent(deletePromtUser?.totalTimeSpent || 0)} in your platform</Text>
+            <Text>
+              User has spent{" "}
+              {renderTimeSpent(deletePromtUser?.totalTimeSpent || 0)} in your
+              platform
+            </Text>
             <TextField
               type="password"
               label="Password"
