@@ -125,15 +125,17 @@ export default function Users() {
       maxWidth: 300,
       onRender: (item: IUser) => renderTimeSpent(item.totalTimeSpent),
     },
-    {
+  ];
+
+  false &&
+    columns.push({
       key: "deleteUser",
       name: "Delete user",
       fieldName: "deleteUser",
       minWidth: 150,
       maxWidth: 150,
       onRender: renderDeleteUserIcon,
-    },
-  ];
+    });
 
   const sessionColumns: IColumn[] = [
     {
@@ -213,29 +215,28 @@ export default function Users() {
   useEffect(() => {
     if (!isLoading && !isError && data && data.isSuccess) {
       const modifiedUsers = sortByDate(
-        filterArrayByUniqueProperty(data.result.users),
+        data.result.users,
         "lastSeenAt"
       );
       setUsers(modifiedUsers);
       setUserCount(modifiedUsers.length);
-      console.log(modifiedUsers);
       !selectedUserId && setSelectedUserId(data.result?.users[0]?.userId);
     }
   }, [isLoading, isError, data]);
 
-  function filterArrayByUniqueProperty(arr: IUser[]) {
-    const uniqueValues: any = {};
+  // function filterArrayByUniqueProperty(arr: IUser[]) {
+  //   const uniqueValues: any = {};
 
-    arr.forEach((obj) => {
-      const value = obj.userId;
+  //   arr.forEach((obj) => {
+  //     const value = obj.userId;
 
-      if (!(value in uniqueValues)) {
-        uniqueValues[value] = obj;
-      }
-    });
+  //     if (!(value in uniqueValues)) {
+  //       uniqueValues[value] = obj;
+  //     }
+  //   });
 
-    return Object.values(uniqueValues);
-  }
+  //   return Object.values(uniqueValues);
+  // }
 
   const sortByDate = (arr: any, key: string) => {
     return arr.sort((a: any, b: any) => {
@@ -253,24 +254,26 @@ export default function Users() {
       tokens={{ childrenGap: 30 }}
     >
       <Stack>
-        <ChoiceGroup
-          defaultSelectedKey={environmentOption}
-          options={options}
-          onChange={(_, option) =>
-            setEnvironmentOption(option?.key || environmentOption)
-          }
-          required={true}
-          styles={{
-            flexContainer: {
-              display: "flex",
-              backgroundColor: "#ffffff",
-              padding: "0 10px 5px",
-              borderRadius: "5px",
-              justifyContent: "space-between",
-              width: "180px",
-            },
-          }}
-        />
+        {false && (
+          <ChoiceGroup
+            defaultSelectedKey={environmentOption}
+            options={options}
+            onChange={(_, option) =>
+              setEnvironmentOption(option?.key || environmentOption)
+            }
+            required={true}
+            styles={{
+              flexContainer: {
+                display: "flex",
+                backgroundColor: "#ffffff",
+                padding: "0 10px 5px",
+                borderRadius: "5px",
+                justifyContent: "space-between",
+                width: "180px",
+              },
+            }}
+          />
+        )}
       </Stack>
       <Stack>
         <Stack>
