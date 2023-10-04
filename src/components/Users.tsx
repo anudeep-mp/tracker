@@ -105,8 +105,8 @@ export default function Users() {
       key: "referrer",
       name: "Referrer",
       fieldName: "referrer",
-      minWidth: 150,
-      maxWidth: 250,
+      minWidth: 100,
+      maxWidth: 200,
     },
     {
       key: "createdAt",
@@ -156,8 +156,8 @@ export default function Users() {
       key: "referrer",
       name: "Referrer",
       fieldName: "referrer",
-      minWidth: 150,
-      maxWidth: 250,
+      minWidth: 100,
+      maxWidth: 100,
     },
     {
       key: "timeStampsCount",
@@ -313,18 +313,8 @@ export default function Users() {
               borderTopRightRadius: "5px",
             }}
           >
-            Session count : {sessionItems.length}
+            Session count : {sessionItems.length} for user {selectedUserId}
           </Text>
-          <Text 
-            variant="large"
-            style={{
-              color: "#fff",
-              padding: "10px",
-              backgroundColor: "#0078d4",
-              borderTopLeftRadius: "5px",
-              borderTopRightRadius: "5px",
-            }}
-          >UserId : {selectedUserId}</Text>
         </Stack>
         <Table
           items={sessionItems || []}
