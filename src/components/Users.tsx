@@ -91,38 +91,45 @@ export default function Users() {
       key: "userId",
       name: "User ID",
       fieldName: "userId",
-      minWidth: 200,
-      maxWidth: 300,
+      minWidth: 150,
+      maxWidth: 200,
     },
     {
       key: "sessionCount",
       name: "Session count",
       fieldName: "sessionCount",
-      minWidth: 200,
-      maxWidth: 300,
+      minWidth: 150,
+      maxWidth: 250,
+    },
+    {
+      key: "referrer",
+      name: "Referrer",
+      fieldName: "referrer",
+      minWidth: 150,
+      maxWidth: 250,
     },
     {
       key: "createdAt",
       name: "First seen",
       fieldName: "createdAt",
-      minWidth: 200,
-      maxWidth: 300,
+      minWidth: 150,
+      maxWidth: 250,
       onRender: (item: IUser) => renderDate(item.createdAt),
     },
     {
       key: "lastSeenAt",
       name: "Last seen",
       fieldName: "lastSeenAt",
-      minWidth: 200,
-      maxWidth: 300,
+      minWidth: 150,
+      maxWidth: 250,
       onRender: (item: IUser) => renderDate(item.lastSeenAt),
     },
     {
       key: "totalTimeSpent",
       name: "Totel time spent",
       fieldName: "totalTimeSpent",
-      minWidth: 200,
-      maxWidth: 300,
+      minWidth: 150,
+      maxWidth: 250,
       onRender: (item: IUser) => renderTimeSpent(item.totalTimeSpent),
     },
   ];
@@ -139,16 +146,16 @@ export default function Users() {
 
   const sessionColumns: IColumn[] = [
     {
-      key: "userId",
-      name: "User ID",
-      fieldName: "userId",
+      key: "sessionId",
+      name: "Session ID",
+      fieldName: "sessionId",
       minWidth: 150,
       maxWidth: 250,
     },
     {
-      key: "sessionId",
-      name: "Session ID",
-      fieldName: "sessionId",
+      key: "referrer",
+      name: "Referrer",
+      fieldName: "referrer",
       minWidth: 150,
       maxWidth: 250,
     },
@@ -223,20 +230,6 @@ export default function Users() {
       !selectedUserId && setSelectedUserId(data.result?.users[0]?.userId);
     }
   }, [isLoading, isError, data]);
-
-  // function filterArrayByUniqueProperty(arr: IUser[]) {
-  //   const uniqueValues: any = {};
-
-  //   arr.forEach((obj) => {
-  //     const value = obj.userId;
-
-  //     if (!(value in uniqueValues)) {
-  //       uniqueValues[value] = obj;
-  //     }
-  //   });
-
-  //   return Object.values(uniqueValues);
-  // }
 
   const sortByDate = (arr: any, key: string) => {
     return arr.sort((a: any, b: any) => {
@@ -322,6 +315,16 @@ export default function Users() {
           >
             Session count : {sessionItems.length}
           </Text>
+          <Text 
+            variant="large"
+            style={{
+              color: "#fff",
+              padding: "10px",
+              backgroundColor: "#0078d4",
+              borderTopLeftRadius: "5px",
+              borderTopRightRadius: "5px",
+            }}
+          >UserId : {selectedUserId}</Text>
         </Stack>
         <Table
           items={sessionItems || []}
