@@ -106,7 +106,7 @@ export default function Users() {
       name: "Referrer",
       fieldName: "referrer",
       minWidth: 100,
-      maxWidth: 200,
+      maxWidth: 100,
     },
     {
       key: "createdAt",
@@ -313,7 +313,7 @@ export default function Users() {
               borderTopRightRadius: "5px",
             }}
           >
-            Session count : {sessionItems.length} for user {selectedUserId}
+            Session count : {sessionItems.length}
           </Text>
         </Stack>
         <Table
